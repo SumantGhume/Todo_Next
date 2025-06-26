@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,48 +8,47 @@ import axios from 'axios';
 export default function EditTodo() {
   const [todo, setTodo] = useState({ title: '', description: '' });
   const router = useRouter();
-  const { id } = useParams();
-  console.log(id);
-  // Fetch todo by ID by using axios
-  const fetchTodo = async () => {
-      try {
-        const response = await axios.get(`/api/Todo/${id}`);
-        setTodo(response.data.todo);
-      } catch (error) {
-        toast.error('Failed to fetch todo');
-      }
-    };
-  useEffect(() => {
-    
-    fetchTodo();
+  const params = useParams();
+
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  // ✅ Fetch todo by ID
+  const fetchTodo = useCallback(async () => {
+    try {
+      const response = await axios.get(`/api/Todo/${id}`);
+      setTodo(response.data.todo);
+    } catch {
+      toast.error('Failed to fetch todo');
+    }
   }, [id]);
 
-  // Update todo
+  useEffect(() => {
+    if (id) {
+      fetchTodo();
+    }
+  }, [fetchTodo, id]);
+
+  // ✅ Update todo
   const updateTodo = async () => {
     if (!todo.title || !todo.description) {
       toast.error('Title and description are required');
       return;
     }
-    // Update todo by using axios
+
     try {
       const response = await axios.put('/api/Todo', { id, ...todo });
       toast.success(response.data.message);
       router.push('/');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update todo');
     }
   };
-
-  useEffect(() => {
-    fetchTodo();
-  }, [id]);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <ToastContainer />
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">Edit Todo</h1>
-        {/* Edit Todo Form */}
 
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <div className="space-y-4">
@@ -74,7 +73,7 @@ export default function EditTodo() {
               Update Todo
             </button>
           </div>
-        </div> 
+        </div>
       </div>
     </div>
   );
