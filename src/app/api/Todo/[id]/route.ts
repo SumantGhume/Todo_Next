@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 // Use the correct context type
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: any }
 ) {
   const { id } = params;
   console.log("Here we get the ID:", id);
