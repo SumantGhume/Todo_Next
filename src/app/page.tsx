@@ -24,7 +24,7 @@ export default function Home() {
       const response = await axios.get('/api/Todo');
       console.log('Todo List: ', response.data);
       setTodos(response.data.todos); // ✅ Make sure your backend returns todos, not todo
-    } catch (error) {
+    } catch  {
       toast.error('Failed to fetch todos');
     }
   };
@@ -46,7 +46,7 @@ export default function Home() {
       toast.success(response.data.message);
       setTodos([...todos, response.data.todo]);
       setNewTodo({ title: '', description: '' });
-    } catch (error) {
+    } catch  {
       toast.error('Failed to add todo');
     }
   };
@@ -57,7 +57,7 @@ export default function Home() {
       const response = await axios.delete(`/api/Todo?id=${id}`);
       toast.success(response.data.message);
       setTodos(todos.filter(todo => todo._id !== id));
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete todo');
     }
   };  
